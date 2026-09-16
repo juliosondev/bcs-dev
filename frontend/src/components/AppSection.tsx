@@ -5,10 +5,10 @@
  * Mockup do celular feito em CSS (sem imagem externa).
  */
 const FEATURES = [
-  "Acompanhe suas aulas e trilhas de qualquer lugar",
-  "Treine com simulações de vendas no celular",
-  "Veja seu progresso e certificados em tempo real",
-  "Receba novos conteúdos e lembretes por notificação",
+  "Consulte saldos e movimentos das suas contas em tempo real",
+  "Faça transferências e pagamentos de serviços com segurança",
+  "Simule créditos e depósitos a prazo em poucos toques",
+  "Receba notificações e controle os seus cartões a qualquer hora",
 ];
 
 export default function AppSection() {
@@ -28,7 +28,7 @@ export default function AppSection() {
               fontSize: "clamp(30px, 4.4vw, 50px)",
             }}
           >
-            Sua escola de vendas{" "}
+            O seu banco{" "}
             <span style={{ color: "#8a5a12" }}>no bolso</span>
           </h2>
 
@@ -36,8 +36,9 @@ export default function AppSection() {
             className="mt-5 max-w-md text-[15px] leading-relaxed"
             style={{ color: "rgba(48,23,10,0.75)" }}
           >
-            Leve a maior escola de vendas do Brasil para onde você for. Estude,
-            pratique e evolua direto do seu celular, no seu ritmo.
+            Com o MyBCS, o aplicativo do Banco BCS, gere as suas contas,
+            transferências, pagamentos e simulações a qualquer hora e em qualquer
+            lugar — de forma simples, rápida e com toda a segurança.
           </p>
 
           {/* Lista de recursos */}
