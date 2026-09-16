@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+/*
+  Tokens de design do BCS — tema DOURADO.
+*/
+@theme {
+  --color-gold: #e8c86a;
+  --color-gold-2: #d4af37;
+  --color-gold-deep: #b8860b;
+  --color-ink: #0a0805;
+  /* Dourado claro (champagne) — cor base padrão das seções claras */
+  --color-champagne: #d6b06a;
+  --gradient-champagne: radial-gradient(130% 130% at 75% 15%, #ecd6a1 0%, #d6b06a 48%, #bd975a 100%);
+  --font-display: "Big Shoulders Text", sans-serif;
+  --font-body: "Inter", sans-serif;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  background: #0a0805;
+  color: #fff;
+}
+
+/* ---------- Animações do "vídeo simulado" ---------- */
+
+/* leve zoom contínuo (efeito Ken Burns, imita vídeo) */
+@keyframes bcs-kenburns {
+  0% { transform: scale(1.05) translate3d(0,0,0); }
+  50% { transform: scale(1.14) translate3d(-1.5%, -1%, 0); }
+  100% { transform: scale(1.05) translate3d(0, 0, 0); }
+}
+
+/* holofotes de palco varrendo */
+@keyframes bcs-spot-a {
+  0%, 100% { transform: translate(-10%, -6%) rotate(-8deg); opacity: .55; }
+  50% { transform: translate(12%, 4%) rotate(6deg); opacity: .85; }
+}
+@keyframes bcs-spot-b {
+  0%, 100% { transform: translate(8%, 4%) rotate(10deg); opacity: .4; }
+  50% { transform: translate(-8%, -4%) rotate(-6deg); opacity: .7; }
+}
+
+/* pulso de brilho geral */
+@keyframes bcs-glow {
+  0%, 100% { opacity: .5; }
+  50% { opacity: .9; }
+}
+
+/* partículas de luz subindo */
+@keyframes bcs-float {
+  0% { transform: translateY(20px); opacity: 0; }
+  15% { opacity: .9; }
+  100% { transform: translateY(-120px); opacity: 0; }
+}
+
+/* silhueta do palestrante respirando */
+@keyframes bcs-breathe {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* marquee dos logos */
+@keyframes bcs-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ponto "AO VIVO" piscando */
+@keyframes bcs-live {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .25; }
+}
+
+/* Skeleton de carregamento (shimmer) */
+@keyframes bcs-shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+.bcs-sk {
+  background: linear-gradient(90deg, rgba(48,23,10,0.07) 25%, rgba(48,23,10,0.14) 37%, rgba(48,23,10,0.07) 63%);
+  background-size: 200% 100%;
+  animation: bcs-shimmer 1.4s ease infinite;
+  border-radius: 10px;
+}
+.bcs-sk-dark {
+  background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.14) 37%, rgba(255,255,255,0.06) 63%);
+  background-size: 200% 100%;
+  animation: bcs-shimmer 1.4s ease infinite;
+  border-radius: 10px;
+}
+
+/* marquee vertical (colunas de posts) — loop sem emenda */
+@keyframes bcs-scroll-y {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+.bcs-marquee-col:hover .bcs-marquee-track {
+  animation-play-state: paused;
+}
+
+/* transição de slide (fade + deslize) */
+@keyframes bcs-slide-in {
+  from { opacity: 0; transform: translateX(28px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes bcs-slide-in-soft {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
