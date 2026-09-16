@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { openAuth } from "./AuthModal";
 
 const BASE = "https://www.bancobcs.ao";
 
@@ -108,6 +109,7 @@ function Icon({ name }: { name: IconName }) {
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState<string | null>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const timer = useRef<number | undefined>(undefined);
 
   useEffect(() => {
@@ -126,7 +128,7 @@ export default function Navbar() {
     timer.current = window.setTimeout(() => setActive(null), 120);
   };
 
-  const solid = scrolled || active !== null;
+  const solid = scrolled || active !== null || mobileOpen;
   const activeMenu = MENUS.find((m) => m.label === active && m.items);
 
   return (
@@ -259,19 +261,84 @@ export default function Navbar() {
           )}
         </nav>
 
-        {/* Hambúrguer (mobile) */}
-        <button
-          className="grid h-11 w-11 place-items-center rounded-xl lg:hidden"
-          style={{ background: "linear-gradient(135deg, #e8c86a, #b8860b)" }}
-          aria-label="Abrir menu"
-        >
-          <div className="space-y-1.5">
-            <span className="block h-0.5 w-6 rounded bg-[#0a0805]" />
-            <span className="block h-0.5 w-6 rounded bg-[#0a0805]" />
-            <span className="block h-0.5 w-6 rounded bg-[#0a0805]" />
-          </div>
-        </button>
+        {/* Ações à direita */}
+        <div className="flex items-center gap-3">
+          {/* Botão MyBCS (desktop) */}
+          <button
+            onClick={() => openAuth("login")}
+            className="hidden items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-[#0a0805] transition-transform hover:scale-[1.03] lg:inline-flex"
+            style={{ background: "linear-gradient(135deg, #f4dd94 0%, #d4af37 55%, #b8860b 100%)" }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM5 20a7 7 0 0 1 14 0" stroke="#0a0805" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            MyBCS
+          </button>
+
+          {/* Hambúrguer (mobile) */}
+          <button
+            onClick={() => setMobileOpen((v) => !v)}
+            className="grid h-11 w-11 place-items-center rounded-xl lg:hidden"
+            style={{ background: "linear-gradient(135deg, #e8c86a, #b8860b)" }}
+            aria-label={mobileOpen ? "Fechar menu" : "Abrir menu"}
+            aria-expanded={mobileOpen}
+          >
+            {mobileOpen ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M6 6l12 12M18 6L6 18" stroke="#0a0805" strokeWidth="2.4" strokeLinecap="round" />
+              </svg>
+            ) : (
+              <div className="space-y-1.5">
+                <span className="block h-0.5 w-6 rounded bg-[#0a0805]" />
+                <span className="block h-0.5 w-6 rounded bg-[#0a0805]" />
+                <span className="block h-0.5 w-6 rounded bg-[#0a0805]" />
+              </div>
+            )}
+          </button>
+        </div>
       </div>
+
+      {/* Menu mobile */}
+      {mobileOpen && (
+        <div className="lg:hidden" style={{ animation: "bcs-slide-in-soft 0.2s ease-out" }}>
+          <div className="mx-4 mb-4 max-h-[75vh] overflow-y-auto rounded-2xl border border-black/10 bg-white p-4 shadow-2xl">
+            <nav className="flex flex-col">
+              {MENUS.map((m) => (
+                <a
+                  key={m.label}
+                  href={m.items ? m.featured!.href : m.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center justify-between border-b border-black/5 py-3 text-[15px] font-semibold"
+                  style={{ color: "#30170a" }}
+                >
+                  {m.label}
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M9 6l6 6-6 6" stroke="#b8860b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </a>
+              ))}
+            </nav>
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <button
+                onClick={() => { setMobileOpen(false); openAuth("login"); }}
+                className="rounded-lg border border-black/15 py-3 text-sm font-bold"
+                style={{ color: "#30170a" }}
+              >
+                MyBCS
+              </button>
+              <button
+                onClick={() => { setMobileOpen(false); openAuth("signup"); }}
+                className="rounded-lg py-3 text-sm font-bold text-[#0a0805]"
+                style={{ background: "linear-gradient(135deg, #f4dd94 0%, #d4af37 55%, #b8860b 100%)" }}
+              >
+                Abrir conta
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
