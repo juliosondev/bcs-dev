@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import api from "../lib/api";
+import { useLang, type Translatable } from "../i18n";
 
 /**
  * Seção "Os nossos simuladores" — conceito de Collapse com a área de opções
@@ -14,21 +15,30 @@ const fmt = new Intl.NumberFormat("pt-AO", {
   maximumFractionDigits: 0,
 });
 
-const OPTIONS = [
+const OPTIONS: { key: string; title: Translatable; desc: Translatable }[] = [
   {
     key: "deposito",
-    title: "Simulador de Depósito a Prazo",
-    desc: "Descubra quanto o seu dinheiro rende ao aplicar num depósito a prazo, escolhendo o valor, o período e a taxa anual.",
+    title: { pt: "Simulador de Depósito a Prazo", en: "Term Deposit Simulator" },
+    desc: {
+      pt: "Descubra quanto o seu dinheiro rende ao aplicar num depósito a prazo, escolhendo o valor, o período e a taxa anual.",
+      en: "Discover how much your money earns in a term deposit by choosing the amount, the period and the annual rate.",
+    },
   },
   {
     key: "credito",
-    title: "Simulador de Crédito",
-    desc: "Calcule a prestação mensal do seu crédito e o total a pagar, ajustando o montante, o prazo e a taxa anual.",
+    title: { pt: "Simulador de Crédito", en: "Loan Simulator" },
+    desc: {
+      pt: "Calcule a prestação mensal do seu crédito e o total a pagar, ajustando o montante, o prazo e a taxa anual.",
+      en: "Calculate your loan's monthly instalment and total payable by adjusting the amount, the term and the annual rate.",
+    },
   },
   {
     key: "bcsai",
-    title: "BCS AI",
-    desc: "Converse com o nosso assistente e tire dúvidas sobre financiamento e crédito, com base na legislação angolana e nos regulamentos do BCS.",
+    title: { pt: "BCS AI", en: "BCS AI" },
+    desc: {
+      pt: "Converse com o nosso assistente e tire dúvidas sobre financiamento e crédito, com base na legislação angolana e nos regulamentos do BCS.",
+      en: "Chat with our assistant and clear up questions about financing and credit, based on Angolan legislation and BCS regulations.",
+    },
   },
 ];
 
@@ -78,21 +88,24 @@ function Slider({
 
 type ChatMsg = { role: "user" | "assistant"; content: string };
 
-const SUGESTOES = [
-  "Que tipos de crédito o BCS oferece?",
-  "Que documentos preciso para pedir um crédito?",
-  "Como abrir uma conta no BCS?",
-  "O que é o MyBCS?",
-  "Como funciona o crédito habitação?",
-  "O que é o BCS EasyPay?",
+const SUGESTOES: Translatable[] = [
+  { pt: "Que tipos de crédito o BCS oferece?", en: "What types of credit does BCS offer?" },
+  { pt: "Que documentos preciso para pedir um crédito?", en: "What documents do I need to apply for a loan?" },
+  { pt: "Como abrir uma conta no BCS?", en: "How do I open an account at BCS?" },
+  { pt: "O que é o MyBCS?", en: "What is MyBCS?" },
+  { pt: "Como funciona o crédito habitação?", en: "How does the home loan work?" },
+  { pt: "O que é o BCS EasyPay?", en: "What is BCS EasyPay?" },
 ];
 
 function ChatPanel() {
+  const { t } = useLang();
   const [messages, setMessages] = useState<ChatMsg[]>([
     {
       role: "assistant",
-      content:
-        "Olá! Sou o BCS AI. Posso ajudar com dúvidas sobre financiamento e crédito no Banco BCS, com base na legislação angolana. Como posso ajudar?",
+      content: t({
+        pt: "Olá! Sou o BCS AI. Posso ajudar com dúvidas sobre financiamento e crédito no Banco BCS, com base na legislação angolana. Como posso ajudar?",
+        en: "Hi! I'm BCS AI. I can help with questions about financing and credit at Banco BCS, based on Angolan legislation. How can I help?",
+      }),
     },
   ]);
   const [input, setInput] = useState("");
@@ -123,7 +136,7 @@ function ChatPanel() {
     } catch {
       setMessages((m) => [
         ...m,
-        { role: "assistant", content: "Ocorreu um erro ao contactar o assistente. Tente novamente." },
+        { role: "assistant", content: t({ pt: "Ocorreu um erro ao contactar o assistente. Tente novamente.", en: "There was an error contacting the assistant. Please try again." }) },
       ]);
     } finally {
       setLoading(false);
@@ -140,11 +153,11 @@ function ChatPanel() {
         </span>
         <div className="flex-1">
           <h3 className="text-lg font-bold leading-none" style={{ fontFamily: "var(--font-display)" }}>BCS AI</h3>
-          <p className="mt-1 text-xs" style={{ color: "rgba(48,23,10,0.55)" }}>Assistente de financiamento e crédito</p>
+          <p className="mt-1 text-xs" style={{ color: "rgba(48,23,10,0.55)" }}>{t({ pt: "Assistente de financiamento e crédito", en: "Financing and credit assistant" })}</p>
         </div>
         {demo && (
           <span className="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide" style={{ background: "rgba(232,200,106,0.2)", color: "#8a5a12" }}>
-            Modo demonstração
+            {t({ pt: "Modo demonstração", en: "Demo mode" })}
           </span>
         )}
       </div>
@@ -168,7 +181,7 @@ function ChatPanel() {
         {loading && (
           <div className="flex justify-start">
             <div className="rounded-2xl px-4 py-2.5 text-sm" style={{ background: "rgba(48,23,10,0.05)", color: "rgba(48,23,10,0.6)" }}>
-              A escrever…
+              {t({ pt: "A escrever…", en: "Typing…" })}
             </div>
           </div>
         )}
@@ -180,12 +193,12 @@ function ChatPanel() {
         <div className="mb-3 flex flex-wrap gap-2">
           {SUGESTOES.map((s) => (
             <button
-              key={s}
-              onClick={() => send(s)}
+              key={s.pt}
+              onClick={() => send(t(s))}
               className="rounded-full border border-black/10 px-3 py-1.5 text-xs font-medium transition-colors hover:bg-black/[0.03]"
               style={{ color: "rgba(48,23,10,0.75)" }}
             >
-              {s}
+              {t(s)}
             </button>
           ))}
         </div>
@@ -202,13 +215,13 @@ function ChatPanel() {
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Escreva a sua pergunta…"
+          placeholder={t({ pt: "Escreva a sua pergunta…", en: "Type your question…" })}
           className="w-full rounded-xl border border-black/10 px-4 py-3 text-sm outline-none focus:border-[#d4af37]"
         />
         <button
           type="submit"
           disabled={loading || !input.trim()}
-          aria-label="Enviar"
+          aria-label={t({ pt: "Enviar", en: "Send" })}
           className="grid h-12 w-12 shrink-0 place-items-center rounded-xl text-[#0a0805] transition-transform hover:scale-[1.03] disabled:opacity-50"
           style={{ background: "linear-gradient(135deg, #f4dd94 0%, #d4af37 55%, #b8860b 100%)" }}
         >
@@ -220,7 +233,11 @@ function ChatPanel() {
 }
 
 export default function SimulatorsSection() {
+  const { t } = useLang();
   const [open, setOpen] = useState(0);
+  const meses = (v: number) =>
+    `${v} ${t({ pt: v === 1 ? "mês" : "meses", en: v === 1 ? "month" : "months" })}`;
+  const aoAno = (v: number) => `${v}% ${t({ pt: "ao ano", en: "per year" })}`;
 
   // Depósito a prazo
   const [dValor, setDValor] = useState(500000);
@@ -249,10 +266,10 @@ export default function SimulatorsSection() {
             fontSize: "clamp(30px, 4.5vw, 48px)",
           }}
         >
-          Os nossos <span style={{ color: "#b8860b" }}>simuladores</span>
+          {t({ pt: "Os nossos", en: "Our" })} <span style={{ color: "#b8860b" }}>{t({ pt: "simuladores", en: "simulators" })}</span>
         </h2>
         <p className="mt-4 max-w-md text-[15px] leading-relaxed" style={{ color: "rgba(48,23,10,0.7)" }}>
-          Faça as contas em segundos e planeie melhor as suas decisões financeiras.
+          {t({ pt: "Faça as contas em segundos e planeie melhor as suas decisões financeiras.", en: "Do the maths in seconds and plan your financial decisions better." })}
         </p>
 
         <div className="mt-10 grid gap-6 md:grid-cols-[minmax(0,320px)_1fr] md:gap-8">
@@ -277,7 +294,7 @@ export default function SimulatorsSection() {
                       className="text-sm font-bold md:text-base"
                       style={{ fontFamily: "var(--font-display)", color: "#30170a" }}
                     >
-                      {opt.title}
+                      {t(opt.title)}
                     </span>
                     <svg
                       width="18"
@@ -297,7 +314,7 @@ export default function SimulatorsSection() {
                   >
                     <div className="overflow-hidden">
                       <p className="px-5 pb-5 text-sm leading-relaxed" style={{ color: "rgba(48,23,10,0.7)" }}>
-                        {opt.desc}
+                        {t(opt.desc)}
                       </p>
                     </div>
                   </div>
@@ -316,21 +333,21 @@ export default function SimulatorsSection() {
             ) : open === 0 ? (
               <div>
                 <h3 className="text-lg font-bold" style={{ fontFamily: "var(--font-display)" }}>
-                  Depósito a Prazo
+                  {t({ pt: "Depósito a Prazo", en: "Term Deposit" })}
                 </h3>
                 <div className="mt-6 grid gap-6 md:grid-cols-2">
                   <div className="space-y-6">
-                    <Slider label="Valor a aplicar" value={dValor} min={50000} max={20000000} step={50000} onChange={setDValor} format={fmt.format} />
-                    <Slider label="Prazo" value={dMeses} min={1} max={60} step={1} onChange={setDMeses} format={(v) => `${v} ${v === 1 ? "mês" : "meses"}`} />
-                    <Slider label="Taxa anual" value={dTaxa} min={1} max={25} step={0.5} onChange={setDTaxa} format={(v) => `${v}% ao ano`} />
+                    <Slider label={t({ pt: "Valor a aplicar", en: "Amount to invest" })} value={dValor} min={50000} max={20000000} step={50000} onChange={setDValor} format={fmt.format} />
+                    <Slider label={t({ pt: "Prazo", en: "Term" })} value={dMeses} min={1} max={60} step={1} onChange={setDMeses} format={meses} />
+                    <Slider label={t({ pt: "Taxa anual", en: "Annual rate" })} value={dTaxa} min={1} max={25} step={0.5} onChange={setDTaxa} format={aoAno} />
                   </div>
                   <div className="flex flex-col justify-center rounded-2xl p-6" style={{ background: "linear-gradient(135deg, #f4dd94, #d4af37)" }}>
-                    <span className="text-xs font-semibold text-[#0a0805]/70">JUROS ESTIMADOS</span>
+                    <span className="text-xs font-semibold text-[#0a0805]/70">{t({ pt: "JUROS ESTIMADOS", en: "ESTIMATED INTEREST" })}</span>
                     <span className="mt-1 text-2xl font-extrabold text-[#0a0805]" style={{ fontFamily: "var(--font-display)" }}>
                       {fmt.format(dJuros)}
                     </span>
                     <div className="my-4 h-px w-full bg-black/15" />
-                    <span className="text-xs font-semibold text-[#0a0805]/70">VALOR FINAL</span>
+                    <span className="text-xs font-semibold text-[#0a0805]/70">{t({ pt: "VALOR FINAL", en: "FINAL AMOUNT" })}</span>
                     <span className="mt-1 text-3xl font-extrabold text-[#0a0805]" style={{ fontFamily: "var(--font-display)" }}>
                       {fmt.format(dFinal)}
                     </span>
@@ -340,26 +357,26 @@ export default function SimulatorsSection() {
             ) : (
               <div>
                 <h3 className="text-lg font-bold" style={{ fontFamily: "var(--font-display)" }}>
-                  Crédito
+                  {t({ pt: "Crédito", en: "Credit" })}
                 </h3>
                 <div className="mt-6 grid gap-6 md:grid-cols-2">
                   <div className="space-y-6">
-                    <Slider label="Montante do crédito" value={cValor} min={100000} max={50000000} step={100000} onChange={setCValor} format={fmt.format} />
-                    <Slider label="Prazo" value={cMeses} min={6} max={120} step={1} onChange={setCMeses} format={(v) => `${v} ${v === 1 ? "mês" : "meses"}`} />
-                    <Slider label="Taxa anual" value={cTaxa} min={1} max={30} step={0.5} onChange={setCTaxa} format={(v) => `${v}% ao ano`} />
+                    <Slider label={t({ pt: "Montante do crédito", en: "Loan amount" })} value={cValor} min={100000} max={50000000} step={100000} onChange={setCValor} format={fmt.format} />
+                    <Slider label={t({ pt: "Prazo", en: "Term" })} value={cMeses} min={6} max={120} step={1} onChange={setCMeses} format={meses} />
+                    <Slider label={t({ pt: "Taxa anual", en: "Annual rate" })} value={cTaxa} min={1} max={30} step={0.5} onChange={setCTaxa} format={aoAno} />
                   </div>
                   <div className="flex flex-col justify-center rounded-2xl p-6" style={{ background: "linear-gradient(135deg, #f4dd94, #d4af37)" }}>
-                    <span className="text-xs font-semibold text-[#0a0805]/70">PRESTAÇÃO MENSAL</span>
+                    <span className="text-xs font-semibold text-[#0a0805]/70">{t({ pt: "PRESTAÇÃO MENSAL", en: "MONTHLY INSTALMENT" })}</span>
                     <span className="mt-1 text-3xl font-extrabold text-[#0a0805]" style={{ fontFamily: "var(--font-display)" }}>
                       {fmt.format(cPrest)}
                     </span>
                     <div className="my-4 h-px w-full bg-black/15" />
                     <div className="flex justify-between text-sm">
-                      <span className="text-[#0a0805]/70">Total a pagar</span>
+                      <span className="text-[#0a0805]/70">{t({ pt: "Total a pagar", en: "Total payable" })}</span>
                       <span className="font-bold text-[#0a0805]">{fmt.format(cTotal)}</span>
                     </div>
                     <div className="mt-1.5 flex justify-between text-sm">
-                      <span className="text-[#0a0805]/70">Total de juros</span>
+                      <span className="text-[#0a0805]/70">{t({ pt: "Total de juros", en: "Total interest" })}</span>
                       <span className="font-bold text-[#0a0805]">{fmt.format(cJuros)}</span>
                     </div>
                   </div>
@@ -369,8 +386,14 @@ export default function SimulatorsSection() {
 
             <p className="mt-6 text-xs" style={{ color: "rgba(48,23,10,0.5)" }}>
               {open === 2
-                ? "Respostas informativas geradas por IA. Não constituem aconselhamento jurídico/financeiro nem decisão de crédito, que depende da análise e aprovação do banco."
-                : "Valores meramente indicativos. As condições reais dependem da análise e aprovação do banco."}
+                ? t({
+                    pt: "Respostas informativas geradas por IA. Não constituem aconselhamento jurídico/financeiro nem decisão de crédito, que depende da análise e aprovação do banco.",
+                    en: "Informational answers generated by AI. They do not constitute legal/financial advice or a credit decision, which depends on the bank's assessment and approval.",
+                  })
+                : t({
+                    pt: "Valores meramente indicativos. As condições reais dependem da análise e aprovação do banco.",
+                    en: "Figures are indicative only. Actual terms depend on the bank's assessment and approval.",
+                  })}
             </p>
           </div>
         </div>

@@ -1,10 +1,11 @@
 import BackgroundVideo from "./BackgroundVideo";
 import Navbar from "./Navbar";
 import { openAuth } from "./AuthModal";
+import { useLang } from "../i18n";
 
 const STATS = [
-  { value: "+79 mil", label: ["empresas", "atendidas"] },
-  { value: "+1M", label: ["de usuários", "particulares"] },
+  { value: "+79 mil", label: { pt: ["empresas", "atendidas"], en: ["businesses", "served"] } },
+  { value: "+1M", label: { pt: ["de usuários", "particulares"], en: ["individual", "customers"] } },
 ];
 
 // Taxas de câmbio (valores indicativos, em Kwanza)
@@ -20,6 +21,7 @@ const RATES = [
 ];
 
 export default function Hero() {
+  const { t, lang } = useLang();
   return (
     <section className="relative min-h-screen w-full overflow-hidden font-body text-white">
       {/* Vídeo de fundo (autoplay, silencioso) */}
@@ -55,9 +57,9 @@ export default function Hero() {
                   {s.value}
                 </span>
                 <span className="text-[10px] leading-tight text-white/75">
-                  {s.label[0]}
+                  {s.label[lang][0]}
                   <br />
-                  {s.label[1]}
+                  {s.label[lang][1]}
                 </span>
               </div>
             ))}
@@ -73,7 +75,7 @@ export default function Hero() {
               lineHeight: 0.95,
             }}
           >
-            O futuro é{" "}
+            {t({ pt: "O futuro é", en: "The future is" })}{" "}
             <span
               style={{
                 background: "linear-gradient(135deg, #f4dd94, #d4af37)",
@@ -81,17 +83,16 @@ export default function Hero() {
                 WebkitTextFillColor: "transparent",
               }}
             >
-              dourado
+              {t({ pt: "dourado", en: "golden" })}
             </span>
           </h1>
 
           {/* Parágrafo */}
           <p className="mt-4 max-w-md text-[13px] leading-relaxed text-white/80">
-            O BCS – Banco de Crédito do Sul, S.A. foi constituído em 2015 e,
-            desde então, tem procurado tornar-se uma referência no nosso sistema
-            financeiro, conforme delineado no seu Plano Estratégico, e focar a
-            sua actividade na gestão personalizada nos segmentos Large Corporate
-            e Private.
+            {t({
+              pt: "O BCS – Banco de Crédito do Sul, S.A. foi constituído em 2015 e, desde então, tem procurado tornar-se uma referência no nosso sistema financeiro, conforme delineado no seu Plano Estratégico, e focar a sua actividade na gestão personalizada nos segmentos Large Corporate e Private.",
+              en: "BCS – Banco de Crédito do Sul, S.A. was established in 2015 and, since then, has sought to become a benchmark in our financial system, as outlined in its Strategic Plan, focusing its activity on personalised management in the Large Corporate and Private segments.",
+            })}
           </p>
 
           {/* CTA dourado */}
@@ -104,7 +105,7 @@ export default function Hero() {
               boxShadow: "0 12px 30px -8px rgba(212,175,55,0.6)",
             }}
           >
-            Abrir uma conta
+            {t({ pt: "Abrir uma conta", en: "Open an account" })}
             <svg
               width="18"
               height="18"
@@ -144,11 +145,11 @@ export default function Hero() {
                   {r.code}
                 </span>
                 <span className="flex items-center gap-1 text-xs text-white/70">
-                  <span className="text-white/45">Compra</span>
+                  <span className="text-white/45">{t({ pt: "Compra", en: "Buy" })}</span>
                   <span className="font-semibold text-white/90">{r.compra}</span>
                 </span>
                 <span className="flex items-center gap-1 text-xs text-white/70">
-                  <span className="text-white/45">Venda</span>
+                  <span className="text-white/45">{t({ pt: "Venda", en: "Sell" })}</span>
                   <span className="font-semibold text-white/90">{r.venda}</span>
                 </span>
                 <span className="ml-1 h-4 w-px bg-white/15" />

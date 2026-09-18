@@ -1,87 +1,103 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { openAuth } from "./AuthModal";
+import { useLang, type Translatable } from "../i18n";
 
 const BASE = "https://www.bancobcs.ao";
 
-type Item = { label: string; desc: string; href: string; icon: IconName };
+type Item = { label: Translatable; desc: Translatable; href: string; icon: IconName };
 type Menu = {
-  label: string;
+  id: string;
+  label: Translatable;
   href?: string; // itens sem dropdown (link directo)
-  featured?: { title: string; desc: string; href: string };
+  featured?: { title: Translatable; desc: Translatable; href: string };
   items?: Item[];
 };
 
+// Rótulos genéricos da navbar (fora dos menus)
+const UI = {
+  explore: { pt: "Explorar", en: "Explore" },
+  myAccount: { pt: "MyBCS", en: "MyBCS" },
+  openAccount: { pt: "Abrir conta", en: "Open account" },
+  openMenu: { pt: "Abrir menu", en: "Open menu" },
+  closeMenu: { pt: "Fechar menu", en: "Close menu" },
+} satisfies Record<string, Translatable>;
+
 const MENUS: Menu[] = [
   {
-    label: "Contas",
+    id: "contas",
+    label: { pt: "Contas", en: "Accounts" },
     featured: {
-      title: "Contas BCS",
-      desc: "A conta certa para cada fase da sua vida.",
+      title: { pt: "Contas BCS", en: "BCS Accounts" },
+      desc: { pt: "A conta certa para cada fase da sua vida.", en: "The right account for every stage of your life." },
       href: `${BASE}/particulares/contas/conta-a-ordem`,
     },
     items: [
-      { label: "Conta à Ordem", desc: "O seu dia a dia", href: `${BASE}/particulares/contas/conta-a-ordem`, icon: "wallet" },
-      { label: "Conta Flex", desc: "Flexível e sem complicações", href: `${BASE}/particulares/contas/conta-flex`, icon: "wallet" },
-      { label: "Conta Simplificada", desc: "Simples e rápida de abrir", href: `${BASE}/particulares/contas/conta-simplificada`, icon: "doc" },
-      { label: "Conta Júnior", desc: "Para os mais novos", href: `${BASE}/particulares/contas/conta-junior`, icon: "piggy" },
+      { label: { pt: "Conta à Ordem", en: "Current Account" }, desc: { pt: "O seu dia a dia", en: "Your everyday banking" }, href: `${BASE}/particulares/contas/conta-a-ordem`, icon: "wallet" },
+      { label: { pt: "Conta Flex", en: "Flex Account" }, desc: { pt: "Flexível e sem complicações", en: "Flexible and hassle-free" }, href: `${BASE}/particulares/contas/conta-flex`, icon: "wallet" },
+      { label: { pt: "Conta Simplificada", en: "Simplified Account" }, desc: { pt: "Simples e rápida de abrir", en: "Simple and quick to open" }, href: `${BASE}/particulares/contas/conta-simplificada`, icon: "doc" },
+      { label: { pt: "Conta Júnior", en: "Junior Account" }, desc: { pt: "Para os mais novos", en: "For the younger ones" }, href: `${BASE}/particulares/contas/conta-junior`, icon: "piggy" },
     ],
   },
   {
-    label: "Cartões",
+    id: "cartoes",
+    label: { pt: "Cartões", en: "Cards" },
     featured: {
-      title: "Cartões BCS",
-      desc: "O cartão ideal para cada momento.",
+      title: { pt: "Cartões BCS", en: "BCS Cards" },
+      desc: { pt: "O cartão ideal para cada momento.", en: "The ideal card for every moment." },
       href: `${BASE}/particulares/cartoes/cartao-de-debito`,
     },
     items: [
-      { label: "Cartão de Débito", desc: "Compre e levante com o seu saldo", href: `${BASE}/particulares/cartoes/cartao-de-debito`, icon: "card" },
-      { label: "Cartão de Crédito", desc: "Mais poder de compra", href: `${BASE}/particulares/cartoes/cartao-de-credito`, icon: "card" },
-      { label: "Cartão Pré-Pago", desc: "Controle os seus gastos", href: `${BASE}/particulares/cartoes/cartao-pre-pago`, icon: "card" },
+      { label: { pt: "Cartão de Débito", en: "Debit Card" }, desc: { pt: "Compre e levante com o seu saldo", en: "Spend and withdraw with your balance" }, href: `${BASE}/particulares/cartoes/cartao-de-debito`, icon: "card" },
+      { label: { pt: "Cartão de Crédito", en: "Credit Card" }, desc: { pt: "Mais poder de compra", en: "More purchasing power" }, href: `${BASE}/particulares/cartoes/cartao-de-credito`, icon: "card" },
+      { label: { pt: "Cartão Pré-Pago", en: "Prepaid Card" }, desc: { pt: "Controle os seus gastos", en: "Control your spending" }, href: `${BASE}/particulares/cartoes/cartao-pre-pago`, icon: "card" },
     ],
   },
   {
-    label: "Poupança e investimento",
+    id: "poupanca",
+    label: { pt: "Poupança e investimento", en: "Savings & investment" },
     featured: {
-      title: "Poupança & Investimento",
-      desc: "Faça o seu dinheiro trabalhar por si.",
+      title: { pt: "Poupança & Investimento", en: "Savings & Investment" },
+      desc: { pt: "Faça o seu dinheiro trabalhar por si.", en: "Make your money work for you." },
       href: `${BASE}/particulares/poupanca-e-investimento/poupanca-online-particulares`,
     },
     items: [
-      { label: "Poupança Online", desc: "Poupe de forma simples", href: `${BASE}/particulares/poupanca-e-investimento/poupanca-online-particulares`, icon: "piggy" },
-      { label: "BCS Gold", desc: "Rentabilize as suas poupanças", href: `${BASE}/particulares/poupanca-e-investimento/bcs-gold`, icon: "coins" },
-      { label: "BCS Liquidez", desc: "Dinheiro disponível quando precisar", href: `${BASE}/particulares/poupanca-e-investimento/bcs-liquidez`, icon: "coins" },
-      { label: "Fundos de Investimento", desc: "Diversifique o seu património", href: `${BASE}/particulares/poupanca-e-investimento/fundos-de-investimento`, icon: "chart" },
+      { label: { pt: "Poupança Online", en: "Online Savings" }, desc: { pt: "Poupe de forma simples", en: "Save the simple way" }, href: `${BASE}/particulares/poupanca-e-investimento/poupanca-online-particulares`, icon: "piggy" },
+      { label: { pt: "BCS Gold", en: "BCS Gold" }, desc: { pt: "Rentabilize as suas poupanças", en: "Grow your savings" }, href: `${BASE}/particulares/poupanca-e-investimento/bcs-gold`, icon: "coins" },
+      { label: { pt: "BCS Liquidez", en: "BCS Liquidity" }, desc: { pt: "Dinheiro disponível quando precisar", en: "Cash available when you need it" }, href: `${BASE}/particulares/poupanca-e-investimento/bcs-liquidez`, icon: "coins" },
+      { label: { pt: "Fundos de Investimento", en: "Investment Funds" }, desc: { pt: "Diversifique o seu património", en: "Diversify your wealth" }, href: `${BASE}/particulares/poupanca-e-investimento/fundos-de-investimento`, icon: "chart" },
     ],
   },
   {
-    label: "Crédito",
+    id: "credito",
+    label: { pt: "Crédito", en: "Credit" },
     featured: {
-      title: "Crédito BCS",
-      desc: "Soluções de crédito para os seus planos.",
+      title: { pt: "Crédito BCS", en: "BCS Credit" },
+      desc: { pt: "Soluções de crédito para os seus planos.", en: "Credit solutions for your plans." },
       href: `${BASE}/particulares/credito/credito-ao-consumo`,
     },
     items: [
-      { label: "BCS Antecipa", desc: "Antecipe o seu ordenado", href: `${BASE}/particulares/credito/bcs-antecipa`, icon: "coins" },
-      { label: "Descoberto Flex", desc: "Liquidez para imprevistos", href: `${BASE}/particulares/credito/descoberto-flex`, icon: "coins" },
-      { label: "Crédito ao consumo", desc: "Realize os seus projetos", href: `${BASE}/particulares/credito/credito-ao-consumo`, icon: "doc" },
-      { label: "Crédito automóvel", desc: "O carro que sempre quis", href: `${BASE}/particulares/credito/credito-automovel`, icon: "car" },
-      { label: "Crédito habitação", desc: "A casa dos seus sonhos", href: `${BASE}/particulares/credito/credito-habitacao`, icon: "home" },
+      { label: { pt: "BCS Antecipa", en: "BCS Advance" }, desc: { pt: "Antecipe o seu ordenado", en: "Get your salary in advance" }, href: `${BASE}/particulares/credito/bcs-antecipa`, icon: "coins" },
+      { label: { pt: "Descoberto Flex", en: "Flex Overdraft" }, desc: { pt: "Liquidez para imprevistos", en: "Liquidity for the unexpected" }, href: `${BASE}/particulares/credito/descoberto-flex`, icon: "coins" },
+      { label: { pt: "Crédito ao consumo", en: "Consumer Credit" }, desc: { pt: "Realize os seus projetos", en: "Bring your projects to life" }, href: `${BASE}/particulares/credito/credito-ao-consumo`, icon: "doc" },
+      { label: { pt: "Crédito automóvel", en: "Auto Loan" }, desc: { pt: "O carro que sempre quis", en: "The car you always wanted" }, href: `${BASE}/particulares/credito/credito-automovel`, icon: "car" },
+      { label: { pt: "Crédito habitação", en: "Home Loan" }, desc: { pt: "A casa dos seus sonhos", en: "The home of your dreams" }, href: `${BASE}/particulares/credito/credito-habitacao`, icon: "home" },
     ],
   },
   {
-    label: "Serviços",
+    id: "servicos",
+    label: { pt: "Serviços", en: "Services" },
     featured: {
-      title: "Serviços BCS",
-      desc: "Ferramentas para o seu dia a dia.",
+      title: { pt: "Serviços BCS", en: "BCS Services" },
+      desc: { pt: "Ferramentas para o seu dia a dia.", en: "Tools for your everyday life." },
       href: `${BASE}/particulares/servicos/bcs-cash`,
     },
     items: [
-      { label: "BCS Cash", desc: "Gestão de tesouraria", href: `${BASE}/particulares/servicos/bcs-cash`, icon: "cash" },
-      { label: "BCS EasyPay", desc: "Receba pagamentos com facilidade", href: "/servicos/easypay", icon: "pay" },
+      { label: { pt: "BCS Cash", en: "BCS Cash" }, desc: { pt: "Gestão de tesouraria", en: "Treasury management" }, href: "/servicos/bcs-cash", icon: "cash" },
+      { label: { pt: "BCS EasyPay", en: "BCS EasyPay" }, desc: { pt: "Receba pagamentos com facilidade", en: "Get paid with ease" }, href: "/servicos/easypay", icon: "pay" },
     ],
   },
-  { label: "O BCS", href: `${BASE}/quem-somos` },
+  { id: "obcs", label: { pt: "O BCS", en: "About BCS" }, href: `${BASE}/quem-somos` },
 ];
 
 type IconName = "wallet" | "card" | "piggy" | "coins" | "chart" | "doc" | "car" | "home" | "cash" | "pay";
@@ -108,6 +124,7 @@ function Icon({ name }: { name: IconName }) {
 }
 
 export default function Navbar() {
+  const { t, lang, toggle } = useLang();
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -130,7 +147,7 @@ export default function Navbar() {
   };
 
   const solid = scrolled || active !== null || mobileOpen;
-  const activeMenu = MENUS.find((m) => m.label === active && m.items);
+  const activeMenu = MENUS.find((m) => m.id === active && m.items);
 
   return (
     <header
@@ -160,31 +177,31 @@ export default function Navbar() {
           {MENUS.map((m) =>
             m.items ? (
               <button
-                key={m.label}
-                onMouseEnter={() => openMenu(m.label)}
+                key={m.id}
+                onMouseEnter={() => openMenu(m.id)}
                 className={`flex items-center gap-1 transition-colors ${
-                  active === m.label ? (solid ? "text-[#8a5a12]" : "text-gold") : ""
+                  active === m.id ? (solid ? "text-[#8a5a12]" : "text-gold") : ""
                 } ${solid ? "hover:text-[#8a5a12]" : "hover:text-gold"}`}
               >
-                {m.label}
+                {t(m.label)}
                 <svg
                   width="14" height="14" viewBox="0 0 24 24" fill="none"
                   className="transition-transform duration-200"
-                  style={{ transform: active === m.label ? "rotate(180deg)" : "none" }}
+                  style={{ transform: active === m.id ? "rotate(180deg)" : "none" }}
                 >
                   <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
             ) : (
               <a
-                key={m.label}
+                key={m.id}
                 href={m.href}
                 target="_blank"
                 rel="noreferrer"
-                onMouseEnter={() => openMenu(m.label)}
+                onMouseEnter={() => openMenu(m.id)}
                 className={`transition-colors ${solid ? "hover:text-[#8a5a12]" : "hover:text-gold"}`}
               >
-                {m.label}
+                {t(m.label)}
               </a>
             )
           )}
@@ -197,7 +214,7 @@ export default function Navbar() {
               <div
                 className="fixed left-1/2 top-[70px] w-[min(940px,calc(100vw-32px))] -translate-x-1/2"
                 style={{ animation: "bcs-slide-in-soft 0.22s ease-out" }}
-                onMouseEnter={() => openMenu(activeMenu.label)}
+                onMouseEnter={() => openMenu(activeMenu.id)}
               >
                 <div className="grid grid-cols-1 gap-6 rounded-3xl border border-black/5 bg-white p-6 shadow-2xl md:grid-cols-[280px_1fr]">
                   {/* Card destaque */}
@@ -215,11 +232,11 @@ export default function Navbar() {
                     </span>
                     <div className="mt-8">
                       <h3 className="text-xl font-extrabold text-[#0a0805]" style={{ fontFamily: "var(--font-display)" }}>
-                        {activeMenu.featured!.title}
+                        {t(activeMenu.featured!.title)}
                       </h3>
-                      <p className="mt-1 text-sm text-[#0a0805]/75">{activeMenu.featured!.desc}</p>
+                      <p className="mt-1 text-sm text-[#0a0805]/75">{t(activeMenu.featured!.desc)}</p>
                       <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-[#0a0805]">
-                        Explorar
+                        {t(UI.explore)}
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="transition-transform group-hover:translate-x-1">
                           <path d="M5 12h14M13 6l6 6-6 6" stroke="#0a0805" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
@@ -230,7 +247,7 @@ export default function Navbar() {
                   {/* Itens */}
                   <div>
                     <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "rgba(48,23,10,0.45)" }}>
-                      {activeMenu.label}
+                      {t(activeMenu.label)}
                     </span>
                     <div className="mt-3 grid gap-1 sm:grid-cols-2">
                       {activeMenu.items!.map((it) => {
@@ -242,21 +259,21 @@ export default function Navbar() {
                             </span>
                             <span>
                               <span className="block text-sm font-bold" style={{ color: "#30170a" }}>
-                                {it.label}
+                                {t(it.label)}
                               </span>
                               <span className="block text-xs" style={{ color: "rgba(48,23,10,0.6)" }}>
-                                {it.desc}
+                                {t(it.desc)}
                               </span>
                             </span>
                           </>
                         );
                         const cls = "flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-[rgba(224,199,140,0.22)]";
                         return internal ? (
-                          <Link key={it.label} to={it.href} onClick={closeMenu} className={cls}>
+                          <Link key={it.href} to={it.href} onClick={closeMenu} className={cls}>
                             {content}
                           </Link>
                         ) : (
-                          <a key={it.label} href={it.href} target="_blank" rel="noreferrer" className={cls}>
+                          <a key={it.href} href={it.href} target="_blank" rel="noreferrer" className={cls}>
                             {content}
                           </a>
                         );
@@ -271,6 +288,36 @@ export default function Navbar() {
 
         {/* Ações à direita */}
         <div className="flex items-center gap-3">
+          {/* Selector de idioma PT | EN */}
+          <div
+            className="flex items-center rounded-lg p-0.5 text-xs font-bold"
+            style={{
+              background: solid ? "rgba(48,23,10,0.08)" : "rgba(255,255,255,0.15)",
+              border: `1px solid ${solid ? "rgba(48,23,10,0.15)" : "rgba(255,255,255,0.3)"}`,
+            }}
+            role="group"
+            aria-label={lang === "pt" ? "Idioma" : "Language"}
+          >
+            {(["pt", "en"] as const).map((code) => {
+              const isActive = lang === code;
+              return (
+                <button
+                  key={code}
+                  onClick={() => code !== lang && toggle()}
+                  aria-pressed={isActive}
+                  className="rounded-md px-2 py-1 uppercase transition-colors"
+                  style={
+                    isActive
+                      ? { background: "linear-gradient(135deg, #f4dd94, #d4af37)", color: "#0a0805" }
+                      : { color: solid ? "rgba(48,23,10,0.7)" : "rgba(255,255,255,0.85)" }
+                  }
+                >
+                  {code}
+                </button>
+              );
+            })}
+          </div>
+
           {/* Botão MyBCS (desktop) */}
           <button
             onClick={() => openAuth("login")}
@@ -280,7 +327,7 @@ export default function Navbar() {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM5 20a7 7 0 0 1 14 0" stroke="#0a0805" strokeWidth="2" strokeLinecap="round" />
             </svg>
-            MyBCS
+            {t(UI.myAccount)}
           </button>
 
           {/* Hambúrguer (mobile) */}
@@ -288,7 +335,7 @@ export default function Navbar() {
             onClick={() => setMobileOpen((v) => !v)}
             className="grid h-11 w-11 place-items-center rounded-xl lg:hidden"
             style={{ background: "linear-gradient(135deg, #e8c86a, #b8860b)" }}
-            aria-label={mobileOpen ? "Fechar menu" : "Abrir menu"}
+            aria-label={mobileOpen ? t(UI.closeMenu) : t(UI.openMenu)}
             aria-expanded={mobileOpen}
           >
             {mobileOpen ? (
@@ -313,7 +360,7 @@ export default function Navbar() {
             <nav className="flex flex-col">
               {MENUS.map((m) => (
                 <a
-                  key={m.label}
+                  key={m.id}
                   href={m.items ? m.featured!.href : m.href}
                   target="_blank"
                   rel="noreferrer"
@@ -321,7 +368,7 @@ export default function Navbar() {
                   className="flex items-center justify-between border-b border-black/5 py-3 text-[15px] font-semibold"
                   style={{ color: "#30170a" }}
                 >
-                  {m.label}
+                  {t(m.label)}
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                     <path d="M9 6l6 6-6 6" stroke="#b8860b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
@@ -334,14 +381,14 @@ export default function Navbar() {
                 className="rounded-lg border border-black/15 py-3 text-sm font-bold"
                 style={{ color: "#30170a" }}
               >
-                MyBCS
+                {t(UI.myAccount)}
               </button>
               <button
                 onClick={() => { setMobileOpen(false); openAuth("signup"); }}
                 className="rounded-lg py-3 text-sm font-bold text-[#0a0805]"
                 style={{ background: "linear-gradient(135deg, #f4dd94 0%, #d4af37 55%, #b8860b 100%)" }}
               >
-                Abrir conta
+                {t(UI.openAccount)}
               </button>
             </div>
           </div>

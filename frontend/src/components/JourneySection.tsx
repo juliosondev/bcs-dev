@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { openAuth } from "./AuthModal";
+import { useLang, type Translatable } from "../i18n";
 
 /**
  * Seção "para todos os momentos da sua jornada" — recriação do padrão de
@@ -8,32 +9,55 @@ import { openAuth } from "./AuthModal";
  * Mobile: carrossel horizontal com swipe + scroll-snap e setas.
  * As imagens são placeholders (picsum) — troque pelas fotos oficiais.
  */
-const STEPS = [
+type Step = {
+  id: string;
+  label: Translatable;
+  title: Translatable;
+  desc: Translatable;
+  cta: Translatable;
+  img: string;
+  auth?: boolean;
+};
+
+const STEPS: Step[] = [
   {
-    label: "Conta",
-    title: "Conta",
-    desc: "Ao fazer a abertura de uma conta no BCS, passa a ter acesso aos serviços essenciais e a desfrutar de uma série de benefícios cuidadosamente projectados para facilitar o seu dia-a-dia.",
-    cta: "Abrir conta",
+    id: "conta",
+    label: { pt: "Conta", en: "Account" },
+    title: { pt: "Conta", en: "Account" },
+    desc: {
+      pt: "Ao fazer a abertura de uma conta no BCS, passa a ter acesso aos serviços essenciais e a desfrutar de uma série de benefícios cuidadosamente projectados para facilitar o seu dia-a-dia.",
+      en: "By opening an account at BCS, you gain access to essential services and a range of benefits carefully designed to make your day-to-day life easier.",
+    },
+    cta: { pt: "Abrir conta", en: "Open account" },
     img: "/conta.jpg",
     auth: true,
   },
   {
-    label: "Cartões",
-    title: "Cartões",
-    desc: "O Cartão de Débito Multicaixa do BCS oferece acesso instantâneo à sua conta corrente, permitindo realizar diversas operações em todo o território nacional.",
-    cta: "Conhecer os cartões",
+    id: "cartoes",
+    label: { pt: "Cartões", en: "Cards" },
+    title: { pt: "Cartões", en: "Cards" },
+    desc: {
+      pt: "O Cartão de Débito Multicaixa do BCS oferece acesso instantâneo à sua conta corrente, permitindo realizar diversas operações em todo o território nacional.",
+      en: "The BCS Multicaixa Debit Card gives you instant access to your current account, letting you carry out a range of operations across the country.",
+    },
+    cta: { pt: "Conhecer os cartões", en: "Explore the cards" },
     img: "/cartoes.jpg",
   },
   {
-    label: "Crédito",
-    title: "Crédito",
-    desc: "Temos a solução de crédito salário que se adapta à sua vida financeira.",
-    cta: "Pedir crédito",
+    id: "credito",
+    label: { pt: "Crédito", en: "Credit" },
+    title: { pt: "Crédito", en: "Credit" },
+    desc: {
+      pt: "Temos a solução de crédito salário que se adapta à sua vida financeira.",
+      en: "We have a salary-backed credit solution that adapts to your financial life.",
+    },
+    cta: { pt: "Pedir crédito", en: "Apply for credit" },
     img: "/credito.jpg",
   },
 ];
 
 export default function JourneySection() {
+  const { t } = useLang();
   const [active, setActive] = useState(0);
   const trackRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -86,14 +110,14 @@ export default function JourneySection() {
               fontSize: "clamp(30px, 4.5vw, 48px)",
             }}
           >
-            O que precisa, à distância de{" "}
-            <span style={{ color: "#b8860b" }}>um simples clique</span>
+            {t({ pt: "O que precisa, à distância de", en: "Everything you need, just" })}{" "}
+            <span style={{ color: "#b8860b" }}>{t({ pt: "um simples clique", en: "a click away" })}</span>
           </h2>
 
           <div className="flex shrink-0 gap-3">
             <button
               onClick={() => move(-1)}
-              aria-label="Anterior"
+              aria-label={t({ pt: "Anterior", en: "Previous" })}
               className="grid h-11 w-11 place-items-center rounded-full border border-black/10 transition-colors hover:bg-black/5 md:h-12 md:w-12"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -102,7 +126,7 @@ export default function JourneySection() {
             </button>
             <button
               onClick={() => move(1)}
-              aria-label="Próximo"
+              aria-label={t({ pt: "Próximo", en: "Next" })}
               className="grid h-11 w-11 place-items-center rounded-full border border-black/10 transition-colors hover:bg-black/5 md:h-12 md:w-12"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -121,7 +145,7 @@ export default function JourneySection() {
             const isActive = i === active;
             return (
               <button
-                key={s.label}
+                key={s.id}
                 onClick={() => {
                   setActive(i);
                   if (s.auth) openAuth("signup");
@@ -132,7 +156,7 @@ export default function JourneySection() {
               >
                 <img
                   src={s.img}
-                  alt={s.title}
+                  alt={t(s.title)}
                   loading="lazy"
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
@@ -147,7 +171,7 @@ export default function JourneySection() {
                 <div className="absolute inset-x-0 bottom-0 p-7">
                   {!isActive && (
                     <span className="block text-lg font-bold text-white drop-shadow [writing-mode:vertical-rl] rotate-180">
-                      {s.label}
+                      {t(s.label)}
                     </span>
                   )}
                   {isActive && (
@@ -161,13 +185,13 @@ export default function JourneySection() {
                           lineHeight: 1,
                         }}
                       >
-                        {s.title}
+                        {t(s.title)}
                       </h3>
                       <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/85">
-                        {s.desc}
+                        {t(s.desc)}
                       </p>
                       <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-gold">
-                        {s.cta}
+                        {t(s.cta)}
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                           <path d="M5 12h14M13 6l6 6-6 6" stroke="#e8c86a" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
@@ -189,7 +213,7 @@ export default function JourneySection() {
         >
           {STEPS.map((s, i) => (
             <div
-              key={s.label}
+              key={s.id}
               ref={(el) => {
                 cardRefs.current[i] = el;
               }}
@@ -198,7 +222,7 @@ export default function JourneySection() {
             >
               <img
                 src={s.img}
-                alt={s.title}
+                alt={t(s.title)}
                 loading="lazy"
                 className="absolute inset-0 h-full w-full object-cover"
               />
@@ -219,13 +243,13 @@ export default function JourneySection() {
                     lineHeight: 1,
                   }}
                 >
-                  {s.title}
+                  {t(s.title)}
                 </h3>
                 <p className="mt-2.5 text-sm leading-relaxed text-white/85">
-                  {s.desc}
+                  {t(s.desc)}
                 </p>
                 <span className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-gold">
-                  {s.cta}
+                  {t(s.cta)}
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                     <path d="M5 12h14M13 6l6 6-6 6" stroke="#e8c86a" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
@@ -239,8 +263,8 @@ export default function JourneySection() {
         <div className="mt-5 flex justify-center gap-2 md:hidden">
           {STEPS.map((s, i) => (
             <button
-              key={s.label}
-              aria-label={`Ir para ${s.label}`}
+              key={s.id}
+              aria-label={`${t({ pt: "Ir para", en: "Go to" })} ${t(s.label)}`}
               onClick={() =>
                 cardRefs.current[i]?.scrollIntoView({
                   behavior: "smooth",

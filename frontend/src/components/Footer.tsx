@@ -4,38 +4,40 @@
  * sociais), no tema dourado escuro do site.
  */
 import { openAuth } from "./AuthModal";
+import { useLang, type Translatable } from "../i18n";
 
 const BASE = "https://www.bancobcs.ao";
 
-const COLUMNS: { title: string; links: { label: string; href: string; ext?: boolean }[] }[] = [
+type FooterLink = { label: Translatable; href: string; ext?: boolean; myBcs?: boolean };
+const COLUMNS: { title: Translatable; links: FooterLink[] }[] = [
   {
-    title: "Links Úteis",
+    title: { pt: "Links Úteis", en: "Useful Links" },
     links: [
-      { label: "Preçário", href: `${BASE}/particulares/precario` },
-      { label: "Sobre nós", href: `${BASE}/quem-somos` },
-      { label: "Abrir uma conta", href: `${BASE}/abrir-conta` },
-      { label: "Trabalhe connosco", href: `${BASE}/quem-somos/carreiras` },
-      { label: "Onde estamos", href: `${BASE}/quem-somos/o-banco/onde-estamos` },
+      { label: { pt: "Preçário", en: "Pricing" }, href: `${BASE}/particulares/precario` },
+      { label: { pt: "Sobre nós", en: "About us" }, href: `${BASE}/quem-somos` },
+      { label: { pt: "Abrir uma conta", en: "Open an account" }, href: `${BASE}/abrir-conta` },
+      { label: { pt: "Trabalhe connosco", en: "Work with us" }, href: `${BASE}/quem-somos/carreiras` },
+      { label: { pt: "Onde estamos", en: "Where we are" }, href: `${BASE}/quem-somos/o-banco/onde-estamos` },
     ],
   },
   {
-    title: "Serviços Centrais",
+    title: { pt: "Serviços Centrais", en: "Central Services" },
     links: [
-      { label: "Fale connosco", href: "tel:+244225300803" },
-      { label: "Dúvidas frequentes", href: `${BASE}/quem-somos/perguntas-frequentes` },
-      { label: "Canal de denúncias", href: `${BASE}/quem-somos/canal-de-denuncias` },
-      { label: "Suporte ao Cliente", href: `${BASE}/quem-somos/provedoria-do-cliente` },
-      { label: "Políticas de Cookies", href: `${BASE}/quem-somos/politicas-de-cookies` },
-      { label: "Política de privacidade", href: `${BASE}/quem-somos/politicas-de-privacidade` },
+      { label: { pt: "Fale connosco", en: "Contact us" }, href: "tel:+244225300803" },
+      { label: { pt: "Dúvidas frequentes", en: "FAQ" }, href: `${BASE}/quem-somos/perguntas-frequentes` },
+      { label: { pt: "Canal de denúncias", en: "Whistleblowing channel" }, href: `${BASE}/quem-somos/canal-de-denuncias` },
+      { label: { pt: "Suporte ao Cliente", en: "Customer Support" }, href: `${BASE}/quem-somos/provedoria-do-cliente` },
+      { label: { pt: "Políticas de Cookies", en: "Cookie Policy" }, href: `${BASE}/quem-somos/politicas-de-cookies` },
+      { label: { pt: "Política de privacidade", en: "Privacy Policy" }, href: `${BASE}/quem-somos/politicas-de-privacidade` },
     ],
   },
   {
-    title: "Soluções",
+    title: { pt: "Soluções", en: "Solutions" },
     links: [
-      { label: "MyBCS Particulares", href: "https://ebnkp.bancobcs.ao/", ext: true },
-      { label: "MyBCS Empresas", href: "https://ebnke.bancobcs.ao/", ext: true },
-      { label: "Simulador de crédito", href: "#simuladores" },
-      { label: "Simulador de depósito a prazo", href: "#simuladores" },
+      { label: { pt: "MyBCS Particulares", en: "MyBCS Personal" }, href: "https://ebnkp.bancobcs.ao/", ext: true, myBcs: true },
+      { label: { pt: "MyBCS Empresas", en: "MyBCS Business" }, href: "https://ebnke.bancobcs.ao/", ext: true, myBcs: true },
+      { label: { pt: "Simulador de crédito", en: "Loan simulator" }, href: "#simuladores" },
+      { label: { pt: "Simulador de depósito a prazo", en: "Term deposit simulator" }, href: "#simuladores" },
     ],
   },
 ];
@@ -64,6 +66,7 @@ const SOCIALS: { label: string; href: string; path: React.ReactNode }[] = [
 ];
 
 export default function Footer() {
+  const { t } = useLang();
   return (
     <footer
       className="w-full px-6 pt-16 pb-8 text-white"
@@ -80,8 +83,10 @@ export default function Footer() {
               </span>
             </div>
             <p className="mt-5 max-w-sm text-sm leading-relaxed text-white/70">
-              Edifício Garden Towers – Torre B, Piso 15, Complexo Comandante Gika,
-              Luanda, Angola.
+              {t({
+                pt: "Edifício Garden Towers – Torre B, Piso 15, Complexo Comandante Gika, Luanda, Angola.",
+                en: "Garden Towers Building – Tower B, Floor 15, Comandante Gika Complex, Luanda, Angola.",
+              })}
             </p>
             <div className="mt-5 space-y-1 text-sm">
               <span className="block text-white/60">BCS Consigo</span>
@@ -94,10 +99,10 @@ export default function Footer() {
           {/* Newsletter */}
           <div className="md:justify-self-end md:text-right">
             <h3 className="text-lg font-bold" style={{ fontFamily: "var(--font-display)" }}>
-              BCS Economic Focus Mensal
+              {t({ pt: "BCS Economic Focus Mensal", en: "Monthly BCS Economic Focus" })}
             </h3>
             <p className="mt-2 text-sm text-white/70">
-              Insira o seu e-mail e receba a nossa newsletter mensal.
+              {t({ pt: "Insira o seu e-mail e receba a nossa newsletter mensal.", en: "Enter your email and receive our monthly newsletter." })}
             </p>
             <form
               className="mt-4 flex max-w-sm gap-2 md:ml-auto"
@@ -106,7 +111,7 @@ export default function Footer() {
               <input
                 type="email"
                 required
-                placeholder="O seu e-mail"
+                placeholder={t({ pt: "O seu e-mail", en: "Your email" })}
                 className="w-full rounded-lg border border-white/15 bg-white/5 px-4 py-3 text-sm text-white placeholder-white/40 outline-none focus:border-gold"
               />
               <button
@@ -114,7 +119,7 @@ export default function Footer() {
                 className="shrink-0 rounded-lg px-5 py-3 text-sm font-bold text-[#0a0805] transition-transform hover:scale-[1.03]"
                 style={{ background: "linear-gradient(135deg, #f4dd94 0%, #d4af37 55%, #b8860b 100%)" }}
               >
-                Assinar
+                {t({ pt: "Assinar", en: "Subscribe" })}
               </button>
             </form>
           </div>
@@ -123,25 +128,24 @@ export default function Footer() {
         {/* Colunas de links */}
         <div className="grid gap-8 py-12 sm:grid-cols-2 md:grid-cols-3">
           {COLUMNS.map((col) => (
-            <div key={col.title}>
+            <div key={col.title.pt}>
               <h4 className="text-sm font-bold uppercase tracking-wider text-gold">
-                {col.title}
+                {t(col.title)}
               </h4>
               <ul className="mt-4 space-y-2.5">
                 {col.links.map((l) => {
-                  const isMyBCS = l.label.startsWith("MyBCS");
                   return (
-                    <li key={l.label}>
+                    <li key={l.label.pt}>
                       <a
                         href={l.href}
-                        {...(isMyBCS
+                        {...(l.myBcs
                           ? { onClick: (e: React.MouseEvent) => { e.preventDefault(); openAuth("login"); } }
                           : l.ext || l.href.startsWith("http")
                           ? { target: "_blank", rel: "noreferrer" }
                           : {})}
                         className="text-sm text-white/70 transition-colors hover:text-gold"
                       >
-                        {l.label}
+                        {t(l.label)}
                       </a>
                     </li>
                   );
@@ -153,7 +157,7 @@ export default function Footer() {
 
         {/* Base: redes sociais + copyright */}
         <div className="flex flex-col items-center justify-between gap-6 border-t border-white/10 pt-8 sm:flex-row">
-          <span className="text-sm text-white/50">© 2026 Banco BCS. Todos os direitos reservados.</span>
+          <span className="text-sm text-white/50">{t({ pt: "© 2026 Banco BCS. Todos os direitos reservados.", en: "© 2026 Banco BCS. All rights reserved." })}</span>
           <div className="flex gap-3">
             {SOCIALS.map((s) => (
               <a

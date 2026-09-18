@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { LanguageProvider } from "./i18n";
 import Hero from "./components/Hero";
 import JourneySection from "./components/JourneySection";
 import RhythmSlider from "./components/RhythmSlider";
@@ -10,6 +11,7 @@ import AuthModal from "./components/AuthModal";
 import PageSkeleton from "./components/PageSkeleton";
 import CardDetailPage from "./components/CardDetailPage";
 import EasyPayPage from "./components/EasyPayPage";
+import CashPage from "./components/CashPage";
 
 function Home() {
   return (
@@ -21,20 +23,23 @@ function Home() {
       <AppSection />
       <SocialFeed />
       <Footer />
-      <PageSkeleton />
+      <PageSkeleton variant="home" />
     </>
   );
 }
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/cartao/:slug" element={<CardDetailPage />} />
-        <Route path="/servicos/easypay" element={<EasyPayPage />} />
-      </Routes>
-      <AuthModal />
-    </BrowserRouter>
+    <LanguageProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/cartao/:slug" element={<CardDetailPage />} />
+          <Route path="/servicos/easypay" element={<EasyPayPage />} />
+        <Route path="/servicos/bcs-cash" element={<CashPage />} />
+        </Routes>
+        <AuthModal />
+      </BrowserRouter>
+    </LanguageProvider>
   );
 }

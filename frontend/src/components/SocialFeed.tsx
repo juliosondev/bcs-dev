@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useLang, type Translatable } from "../i18n";
 
 /**
  * "O Banco BCS nas redes" — combina:
@@ -19,17 +20,17 @@ declare global {
   }
 }
 
-type Post = { platform: "ig" | "li"; caption: string; href: string };
+type Post = { platform: "ig" | "li"; caption: Translatable; href: string };
 
 const POSTS: Post[] = [
-  { platform: "ig", caption: "Abra a sua Conta à Ordem 100% online 📲", href: IG_PROFILE },
-  { platform: "li", caption: "BCS Economic Focus: as tendências do mês para a sua empresa.", href: LI_PROFILE },
-  { platform: "ig", caption: "Dicas simples para poupar no dia a dia 💰", href: IG_PROFILE },
-  { platform: "li", caption: "Estamos a recrutar! Junte-se à equipa BCS.", href: LI_PROFILE },
-  { platform: "ig", caption: "Cartão de Débito BCS: compre e levante em qualquer lugar.", href: IG_PROFILE },
-  { platform: "li", caption: "BCS EasyPay: receba pagamentos com mais facilidade.", href: LI_PROFILE },
-  { platform: "ig", caption: "Conta Júnior: eduque os mais novos a poupar.", href: IG_PROFILE },
-  { platform: "li", caption: "Inaugurámos uma nova agência em Luanda.", href: LI_PROFILE },
+  { platform: "ig", caption: { pt: "Abra a sua Conta à Ordem 100% online 📲", en: "Open your Current Account 100% online 📲" }, href: IG_PROFILE },
+  { platform: "li", caption: { pt: "BCS Economic Focus: as tendências do mês para a sua empresa.", en: "BCS Economic Focus: this month's trends for your business." }, href: LI_PROFILE },
+  { platform: "ig", caption: { pt: "Dicas simples para poupar no dia a dia 💰", en: "Simple tips to save every day 💰" }, href: IG_PROFILE },
+  { platform: "li", caption: { pt: "Estamos a recrutar! Junte-se à equipa BCS.", en: "We're hiring! Join the BCS team." }, href: LI_PROFILE },
+  { platform: "ig", caption: { pt: "Cartão de Débito BCS: compre e levante em qualquer lugar.", en: "BCS Debit Card: pay and withdraw anywhere." }, href: IG_PROFILE },
+  { platform: "li", caption: { pt: "BCS EasyPay: receba pagamentos com mais facilidade.", en: "BCS EasyPay: receive payments with greater ease." }, href: LI_PROFILE },
+  { platform: "ig", caption: { pt: "Conta Júnior: eduque os mais novos a poupar.", en: "Junior Account: teach the little ones to save." }, href: IG_PROFILE },
+  { platform: "li", caption: { pt: "Inaugurámos uma nova agência em Luanda.", en: "We've opened a new branch in Luanda." }, href: LI_PROFILE },
 ];
 
 function IgIcon({ stroke = "#30170a" }: { stroke?: string }) {
@@ -50,6 +51,7 @@ function LiIcon({ fill = "#30170a" }: { fill?: string }) {
 }
 
 function Card({ post }: { post: Post }) {
+  const { t } = useLang();
   const isIg = post.platform === "ig";
   return (
     <a
@@ -76,7 +78,7 @@ function Card({ post }: { post: Post }) {
           {isIg ? "@banco_bcs" : "Banco BCS"}
         </span>
         <p className="mt-1 text-sm leading-snug" style={{ color: "rgba(48,23,10,0.85)" }}>
-          {post.caption}
+          {t(post.caption)}
         </p>
       </div>
     </a>
@@ -105,6 +107,7 @@ function Column({ posts, duration, reverse }: { posts: Post[]; duration: number;
 }
 
 export default function SocialFeed() {
+  const { t } = useLang();
   // Carrega/reprocessa o embed.js do Instagram (para o destaque)
   useEffect(() => {
     const id = "instagram-embed-js";
@@ -132,11 +135,13 @@ export default function SocialFeed() {
             className="leading-[1.05]"
             style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "clamp(30px, 4.4vw, 50px)" }}
           >
-            O Banco BCS <span style={{ color: "#b8860b" }}>nas redes</span>
+            {t({ pt: "O Banco BCS", en: "Banco BCS" })} <span style={{ color: "#b8860b" }}>{t({ pt: "nas redes", en: "on social" })}</span>
           </h2>
           <p className="mt-5 max-w-md text-[15px] leading-relaxed" style={{ color: "rgba(48,23,10,0.7)" }}>
-            Acompanhe as novidades, dicas financeiras e os bastidores do Banco BCS
-            no Instagram e no LinkedIn.
+            {t({
+              pt: "Acompanhe as novidades, dicas financeiras e os bastidores do Banco BCS no Instagram e no LinkedIn.",
+              en: "Follow Banco BCS news, financial tips and behind-the-scenes on Instagram and LinkedIn.",
+            })}
           </p>
         </div>
 
@@ -144,7 +149,7 @@ export default function SocialFeed() {
           {/* DESTAQUE: post real (iframe) */}
           <div>
             <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "rgba(48,23,10,0.45)" }}>
-              Em destaque
+              {t({ pt: "Em destaque", en: "Featured" })}
             </span>
             <div
               className="mt-3 overflow-hidden rounded-2xl bg-white"

@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLang, type Translatable } from "../i18n";
 
 /**
  * Seção "Acompanhamos o seu ritmo" — recriação do slider de duas colunas do
@@ -8,11 +9,25 @@ import { useNavigate } from "react-router-dom";
  * e contador "X de N" no canto inferior. No mobile também responde a swipe.
  * Imagens são placeholders (picsum) — troque pelas fotos oficiais.
  */
-const SLIDES = [
+type Slide = {
+  title: Translatable;
+  desc: Translatable;
+  cta: Translatable;
+  slug: string;
+  img: string;
+  front?: string;
+  back?: string;
+  contain: boolean;
+};
+
+const SLIDES: Slide[] = [
   {
-    title: "Mais do que um cartão, uma porta para o mundo",
-    desc: "Ao aderir ao cartão BCS Mastercard Gold, pode usufruir de serviços exclusivos e experiências únicas e memoráveis.",
-    cta: "Conhecer o cartão Gold",
+    title: { pt: "Mais do que um cartão, uma porta para o mundo", en: "More than a card, a gateway to the world" },
+    desc: {
+      pt: "Ao aderir ao cartão BCS Mastercard Gold, pode usufruir de serviços exclusivos e experiências únicas e memoráveis.",
+      en: "With the BCS Mastercard Gold, you can enjoy exclusive services and unique, memorable experiences.",
+    },
+    cta: { pt: "Conhecer o cartão Gold", en: "Discover the Gold card" },
     slug: "mastercard-gold",
     img: "/card-front.png",
     front: "/card-front.png",
@@ -20,9 +35,12 @@ const SLIDES = [
     contain: true,
   },
   {
-    title: "Mais do que um cartão, um reconhecimento a nível mundial",
-    desc: "Ao aderir ao cartão BCS Mastercard World, pode desfrutar de experiências únicas, em todo o mundo.",
-    cta: "Conhecer o cartão World",
+    title: { pt: "Mais do que um cartão, um reconhecimento a nível mundial", en: "More than a card, recognition worldwide" },
+    desc: {
+      pt: "Ao aderir ao cartão BCS Mastercard World, pode desfrutar de experiências únicas, em todo o mundo.",
+      en: "With the BCS Mastercard World, you can enjoy unique experiences all over the world.",
+    },
+    cta: { pt: "Conhecer o cartão World", en: "Discover the World card" },
     slug: "mastercard-world",
     img: "/card2-front.png",
     front: "/card2-front.png",
@@ -30,9 +48,12 @@ const SLIDES = [
     contain: true,
   },
   {
-    title: "Mais do que um cartão, flexibilidade e tranquilidade garantida",
-    desc: "Ao aderir ao cartão Pré-pago Sublime, tem como garantido um meio de pagamento conveniente e seguro para as suas viagens ou compras online.",
-    cta: "Conhecer o Pré-pago",
+    title: { pt: "Mais do que um cartão, flexibilidade e tranquilidade garantida", en: "More than a card, guaranteed flexibility and peace of mind" },
+    desc: {
+      pt: "Ao aderir ao cartão Pré-pago Sublime, tem como garantido um meio de pagamento conveniente e seguro para as suas viagens ou compras online.",
+      en: "With the Sublime Prepaid card, you get a convenient and secure means of payment for your travels or online purchases.",
+    },
+    cta: { pt: "Conhecer o Pré-pago", en: "Discover the Prepaid" },
     slug: "pre-pago-sublime",
     img: "/card3-front.svg",
     contain: true,
@@ -40,6 +61,7 @@ const SLIDES = [
 ];
 
 export default function RhythmSlider() {
+  const { t } = useLang();
   const [index, setIndex] = useState(0);
   const touchX = useRef<number | null>(null);
   const navigate = useNavigate();
@@ -78,8 +100,8 @@ export default function RhythmSlider() {
               fontSize: "clamp(30px, 4.2vw, 48px)",
             }}
           >
-            Conheça os nossos{" "}
-            <span style={{ color: "#b8860b" }}>cartões</span>
+            {t({ pt: "Conheça os nossos", en: "Discover our" })}{" "}
+            <span style={{ color: "#b8860b" }}>{t({ pt: "cartões", en: "cards" })}</span>
           </h2>
 
           {/* Conteúdo do slide (anima ao trocar) */}
@@ -92,20 +114,20 @@ export default function RhythmSlider() {
                 fontSize: "clamp(20px, 2.4vw, 26px)",
               }}
             >
-              {s.title}
+              {t(s.title)}
             </h3>
             <p
               className="mt-3 max-w-md text-[15px] leading-relaxed"
               style={{ color: "rgba(48,23,10,0.75)" }}
             >
-              {s.desc}
+              {t(s.desc)}
             </p>
             <button
               onClick={() => navigate(`/cartao/${s.slug}`)}
               className="mt-7 inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold text-white transition-transform hover:scale-[1.03]"
               style={{ background: "#30170a" }}
             >
-              {s.cta}
+              {t(s.cta)}
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <path d="M5 12h14M13 6l6 6-6 6" stroke="#e8c86a" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -116,7 +138,7 @@ export default function RhythmSlider() {
           <div className="mt-10 flex items-center gap-4">
             <button
               onClick={() => go(-1)}
-              aria-label="Anterior"
+              aria-label={t({ pt: "Anterior", en: "Previous" })}
               className="grid h-12 w-12 place-items-center rounded-full border border-black/10 transition-colors hover:bg-black/5"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -124,11 +146,11 @@ export default function RhythmSlider() {
               </svg>
             </button>
             <span className="text-sm font-semibold tabular-nums" style={{ color: "rgba(48,23,10,0.7)" }}>
-              {index + 1} de {SLIDES.length}
+              {index + 1} {t({ pt: "de", en: "of" })} {SLIDES.length}
             </span>
             <button
               onClick={() => go(1)}
-              aria-label="Próximo"
+              aria-label={t({ pt: "Próximo", en: "Next" })}
               className="grid h-12 w-12 place-items-center rounded-full border border-black/10 transition-colors hover:bg-black/5"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -161,7 +183,7 @@ export default function RhythmSlider() {
                 />
                 <img
                   src={s.front}
-                  alt={s.title}
+                  alt={t(s.title)}
                   loading="lazy"
                   className="relative h-[78%] w-auto -translate-x-[14%] -rotate-[7deg]"
                   style={{ filter: "drop-shadow(0 22px 34px rgba(48,23,10,0.4))" }}
@@ -170,7 +192,7 @@ export default function RhythmSlider() {
             ) : s.contain ? (
               <img
                 src={s.img}
-                alt={s.title}
+                alt={t(s.title)}
                 loading="lazy"
                 className="w-[74%] max-h-[80%] -rotate-[7deg]"
                 style={{ filter: "drop-shadow(0 22px 34px rgba(48,23,10,0.4))" }}
@@ -178,7 +200,7 @@ export default function RhythmSlider() {
             ) : (
               <img
                 src={s.img}
-                alt={s.title}
+                alt={t(s.title)}
                 loading="lazy"
                 className="h-full w-full object-cover"
               />
