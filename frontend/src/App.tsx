@@ -8,6 +8,8 @@ import SocialFeed from "./components/SocialFeed";
 import Footer from "./components/Footer";
 import AuthModal from "./components/AuthModal";
 import PageSkeleton from "./components/PageSkeleton";
+import CardDetailPage from "./components/CardDetailPage";
+import EasyPayPage from "./components/EasyPayPage";
 
 function Home() {
   return (
@@ -19,7 +21,6 @@ function Home() {
       <AppSection />
       <SocialFeed />
       <Footer />
-      <AuthModal />
       <PageSkeleton />
     </>
   );
@@ -30,7 +31,10 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/cartao/:slug" element={<CardDetailPage />} />
+        <Route path="/servicos/easypay" element={<EasyPayPage />} />
       </Routes>
+      <AuthModal />
     </BrowserRouter>
   );
 }

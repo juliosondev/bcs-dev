@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 /**
  * Seção "Acompanhamos o seu ritmo" — recriação do slider de duas colunas do
@@ -12,6 +13,7 @@ const SLIDES = [
     title: "Mais do que um cartão, uma porta para o mundo",
     desc: "Ao aderir ao cartão BCS Mastercard Gold, pode usufruir de serviços exclusivos e experiências únicas e memoráveis.",
     cta: "Conhecer o cartão Gold",
+    slug: "mastercard-gold",
     img: "/card-front.png",
     front: "/card-front.png",
     back: "/card-back.png",
@@ -21,6 +23,7 @@ const SLIDES = [
     title: "Mais do que um cartão, um reconhecimento a nível mundial",
     desc: "Ao aderir ao cartão BCS Mastercard World, pode desfrutar de experiências únicas, em todo o mundo.",
     cta: "Conhecer o cartão World",
+    slug: "mastercard-world",
     img: "/card2-front.png",
     front: "/card2-front.png",
     back: "/card2-back.png",
@@ -30,6 +33,7 @@ const SLIDES = [
     title: "Mais do que um cartão, flexibilidade e tranquilidade garantida",
     desc: "Ao aderir ao cartão Pré-pago Sublime, tem como garantido um meio de pagamento conveniente e seguro para as suas viagens ou compras online.",
     cta: "Conhecer o Pré-pago",
+    slug: "pre-pago-sublime",
     img: "/card3-front.svg",
     contain: true,
   },
@@ -38,6 +42,7 @@ const SLIDES = [
 export default function RhythmSlider() {
   const [index, setIndex] = useState(0);
   const touchX = useRef<number | null>(null);
+  const navigate = useNavigate();
   const s = SLIDES[index];
 
   const go = (dir: number) =>
@@ -96,6 +101,7 @@ export default function RhythmSlider() {
               {s.desc}
             </p>
             <button
+              onClick={() => navigate(`/cartao/${s.slug}`)}
               className="mt-7 inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold text-white transition-transform hover:scale-[1.03]"
               style={{ background: "#30170a" }}
             >

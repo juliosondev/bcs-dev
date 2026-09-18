@@ -42,4 +42,10 @@ return [
         'sender' => env('SMSILLICO_SENDER', 'BCS'),
     ],
 
+    'anthropic' => [
+        'key' => env('ANTHROPIC_API_KEY'),
+        'model' => env('ANTHROPIC_MODEL', 'claude-opus-5'),
+        'workspace' => env('ANTHROPIC_WORKSPACE_ID'),
+    ],
+
 ];

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import api from "../lib/api";
 
 /**
  * Seção "Os nossos simuladores" — conceito de Collapse com a área de opções
@@ -23,6 +24,11 @@ const OPTIONS = [
     key: "credito",
     title: "Simulador de Crédito",
     desc: "Calcule a prestação mensal do seu crédito e o total a pagar, ajustando o montante, o prazo e a taxa anual.",
+  },
+  {
+    key: "bcsai",
+    title: "BCS AI",
+    desc: "Converse com o nosso assistente e tire dúvidas sobre financiamento e crédito, com base na legislação angolana e nos regulamentos do BCS.",
   },
 ];
 
@@ -66,6 +72,149 @@ function Slider({
         className="mt-2 w-full accent-[#b8860b]"
         style={{ accentColor: "#b8860b" }}
       />
+    </div>
+  );
+}
+
+type ChatMsg = { role: "user" | "assistant"; content: string };
+
+const SUGESTOES = [
+  "Que tipos de crédito o BCS oferece?",
+  "Que documentos preciso para pedir um crédito?",
+  "Como abrir uma conta no BCS?",
+  "O que é o MyBCS?",
+  "Como funciona o crédito habitação?",
+  "O que é o BCS EasyPay?",
+];
+
+function ChatPanel() {
+  const [messages, setMessages] = useState<ChatMsg[]>([
+    {
+      role: "assistant",
+      content:
+        "Olá! Sou o BCS AI. Posso ajudar com dúvidas sobre financiamento e crédito no Banco BCS, com base na legislação angolana. Como posso ajudar?",
+    },
+  ]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [demo, setDemo] = useState(false);
+  const endRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [messages, loading]);
+
+  async function send(text: string) {
+    const q = text.trim();
+    if (!q || loading) return;
+    const next: ChatMsg[] = [...messages, { role: "user", content: q }];
+    setMessages(next);
+    setInput("");
+    setLoading(true);
+    // Traz o chat para o foco da página enquanto a resposta é gerada
+    rootRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    try {
+      // Não envia a saudação inicial (a API exige começar por 'user')
+      const payload = next.slice(1).map(({ role, content }) => ({ role, content }));
+      const { data } = await api.post("/ai/chat", { messages: payload });
+      if (data?.demo) setDemo(true);
+      setMessages((m) => [...m, { role: "assistant", content: data?.reply ?? "…" }]);
+    } catch {
+      setMessages((m) => [
+        ...m,
+        { role: "assistant", content: "Ocorreu um erro ao contactar o assistente. Tente novamente." },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div ref={rootRef} className="flex h-[440px] flex-col scroll-mt-24">
+      <div className="flex items-center gap-3 border-b border-black/5 pb-4">
+        <span className="grid h-10 w-10 place-items-center rounded-xl" style={{ background: "linear-gradient(135deg, #e8c86a, #b8860b)" }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M12 3l2 4 4 2-4 2-2 4-2-4-4-2 4-2 2-4Z" stroke="#0a0805" strokeWidth="1.8" strokeLinejoin="round" />
+          </svg>
+        </span>
+        <div className="flex-1">
+          <h3 className="text-lg font-bold leading-none" style={{ fontFamily: "var(--font-display)" }}>BCS AI</h3>
+          <p className="mt-1 text-xs" style={{ color: "rgba(48,23,10,0.55)" }}>Assistente de financiamento e crédito</p>
+        </div>
+        {demo && (
+          <span className="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide" style={{ background: "rgba(232,200,106,0.2)", color: "#8a5a12" }}>
+            Modo demonstração
+          </span>
+        )}
+      </div>
+
+      {/* Mensagens */}
+      <div className="flex-1 space-y-3 overflow-y-auto py-4 pr-1">
+        {messages.map((m, i) => (
+          <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+            <div
+              className="max-w-[80%] whitespace-pre-wrap rounded-2xl px-4 py-2.5 text-sm leading-relaxed"
+              style={
+                m.role === "user"
+                  ? { background: "linear-gradient(135deg, #f4dd94, #d4af37)", color: "#0a0805" }
+                  : { background: "rgba(48,23,10,0.05)", color: "#30170a" }
+              }
+            >
+              {m.content}
+            </div>
+          </div>
+        ))}
+        {loading && (
+          <div className="flex justify-start">
+            <div className="rounded-2xl px-4 py-2.5 text-sm" style={{ background: "rgba(48,23,10,0.05)", color: "rgba(48,23,10,0.6)" }}>
+              A escrever…
+            </div>
+          </div>
+        )}
+        <div ref={endRef} />
+      </div>
+
+      {/* Sugestões */}
+      {messages.length <= 1 && (
+        <div className="mb-3 flex flex-wrap gap-2">
+          {SUGESTOES.map((s) => (
+            <button
+              key={s}
+              onClick={() => send(s)}
+              className="rounded-full border border-black/10 px-3 py-1.5 text-xs font-medium transition-colors hover:bg-black/[0.03]"
+              style={{ color: "rgba(48,23,10,0.75)" }}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Entrada */}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          send(input);
+        }}
+        className="flex gap-2"
+      >
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Escreva a sua pergunta…"
+          className="w-full rounded-xl border border-black/10 px-4 py-3 text-sm outline-none focus:border-[#d4af37]"
+        />
+        <button
+          type="submit"
+          disabled={loading || !input.trim()}
+          aria-label="Enviar"
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-xl text-[#0a0805] transition-transform hover:scale-[1.03] disabled:opacity-50"
+          style={{ background: "linear-gradient(135deg, #f4dd94 0%, #d4af37 55%, #b8860b 100%)" }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 12l16-8-6 16-3-6-7-2Z" stroke="#0a0805" strokeWidth="1.8" strokeLinejoin="round" /></svg>
+        </button>
+      </form>
     </div>
   );
 }
@@ -162,7 +311,9 @@ export default function SimulatorsSection() {
             className="rounded-3xl border p-6 md:p-8"
             style={{ borderColor: "rgba(48,23,10,0.1)", background: "#fff", boxShadow: "0 20px 50px -30px rgba(48,23,10,0.4)" }}
           >
-            {open === 0 ? (
+            {open === 2 ? (
+              <ChatPanel />
+            ) : open === 0 ? (
               <div>
                 <h3 className="text-lg font-bold" style={{ fontFamily: "var(--font-display)" }}>
                   Depósito a Prazo
@@ -217,7 +368,9 @@ export default function SimulatorsSection() {
             )}
 
             <p className="mt-6 text-xs" style={{ color: "rgba(48,23,10,0.5)" }}>
-              Valores meramente indicativos. As condições reais dependem da análise e aprovação do banco.
+              {open === 2
+                ? "Respostas informativas geradas por IA. Não constituem aconselhamento jurídico/financeiro nem decisão de crédito, que depende da análise e aprovação do banco."
+                : "Valores meramente indicativos. As condições reais dependem da análise e aprovação do banco."}
             </p>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { openAuth } from "./AuthModal";
 
 const BASE = "https://www.bancobcs.ao";
@@ -77,7 +78,7 @@ const MENUS: Menu[] = [
     },
     items: [
       { label: "BCS Cash", desc: "Gestão de tesouraria", href: `${BASE}/particulares/servicos/bcs-cash`, icon: "cash" },
-      { label: "BCS EasyPay", desc: "Receba pagamentos com facilidade", href: `${BASE}/empresas/servicos/bcs-easypay`, icon: "pay" },
+      { label: "BCS EasyPay", desc: "Receba pagamentos com facilidade", href: "/servicos/easypay", icon: "pay" },
     ],
   },
   { label: "O BCS", href: `${BASE}/quem-somos` },
@@ -232,27 +233,34 @@ export default function Navbar() {
                       {activeMenu.label}
                     </span>
                     <div className="mt-3 grid gap-1 sm:grid-cols-2">
-                      {activeMenu.items!.map((it) => (
-                        <a
-                          key={it.label}
-                          href={it.href}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-[rgba(224,199,140,0.22)]"
-                        >
-                          <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-lg" style={{ background: "rgba(232,200,106,0.15)" }}>
-                            <Icon name={it.icon} />
-                          </span>
-                          <span>
-                            <span className="block text-sm font-bold" style={{ color: "#30170a" }}>
-                              {it.label}
+                      {activeMenu.items!.map((it) => {
+                        const internal = it.href.startsWith("/");
+                        const content = (
+                          <>
+                            <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-lg" style={{ background: "rgba(232,200,106,0.15)" }}>
+                              <Icon name={it.icon} />
                             </span>
-                            <span className="block text-xs" style={{ color: "rgba(48,23,10,0.6)" }}>
-                              {it.desc}
+                            <span>
+                              <span className="block text-sm font-bold" style={{ color: "#30170a" }}>
+                                {it.label}
+                              </span>
+                              <span className="block text-xs" style={{ color: "rgba(48,23,10,0.6)" }}>
+                                {it.desc}
+                              </span>
                             </span>
-                          </span>
-                        </a>
-                      ))}
+                          </>
+                        );
+                        const cls = "flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-[rgba(224,199,140,0.22)]";
+                        return internal ? (
+                          <Link key={it.label} to={it.href} onClick={closeMenu} className={cls}>
+                            {content}
+                          </Link>
+                        ) : (
+                          <a key={it.label} href={it.href} target="_blank" rel="noreferrer" className={cls}>
+                            {content}
+                          </a>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
