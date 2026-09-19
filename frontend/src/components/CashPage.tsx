@@ -65,7 +65,7 @@ export default function CashPage() {
       >
         {/* Imagem de fundo — mais nítida à esquerda */}
         <img
-          src="/conta.jpg"
+          src="/bcscash-hero.jpg"
           alt=""
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 h-full w-full object-cover"

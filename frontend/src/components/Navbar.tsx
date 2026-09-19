@@ -128,6 +128,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileSub, setMobileSub] = useState<string | null>(null);
   const timer = useRef<number | undefined>(undefined);
 
   useEffect(() => {
@@ -358,22 +359,79 @@ export default function Navbar() {
         <div className="lg:hidden" style={{ animation: "bcs-slide-in-soft 0.2s ease-out" }}>
           <div className="mx-4 mb-4 max-h-[75vh] overflow-y-auto rounded-2xl border border-black/10 bg-white p-4 shadow-2xl">
             <nav className="flex flex-col">
-              {MENUS.map((m) => (
-                <a
-                  key={m.id}
-                  href={m.items ? m.featured!.href : m.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-between border-b border-black/5 py-3 text-[15px] font-semibold"
-                  style={{ color: "#30170a" }}
-                >
-                  {t(m.label)}
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M9 6l6 6-6 6" stroke="#b8860b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </a>
-              ))}
+              {MENUS.map((m) => {
+                // Opção sem submenu — link directo
+                if (!m.items) {
+                  return (
+                    <a
+                      key={m.id}
+                      href={m.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center justify-between border-b border-black/5 py-3 text-[15px] font-semibold"
+                      style={{ color: "#30170a" }}
+                    >
+                      {t(m.label)}
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 6l6 6-6 6" stroke="#b8860b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </a>
+                  );
+                }
+                // Opção com submenu — expande ao clicar
+                const expanded = mobileSub === m.id;
+                return (
+                  <div key={m.id} className="border-b border-black/5">
+                    <button
+                      onClick={() => setMobileSub((cur) => (cur === m.id ? null : m.id))}
+                      aria-expanded={expanded}
+                      className="flex w-full items-center justify-between py-3 text-[15px] font-semibold"
+                      style={{ color: "#30170a" }}
+                    >
+                      {t(m.label)}
+                      <svg
+                        width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        className="transition-transform duration-200"
+                        style={{ transform: expanded ? "rotate(180deg)" : "none" }}
+                      >
+                        <path d="M6 9l6 6 6-6" stroke="#b8860b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </button>
+                    {/* Submenu (collapse) */}
+                    <div className="grid transition-all duration-300 ease-out" style={{ gridTemplateRows: expanded ? "1fr" : "0fr" }}>
+                      <div className="overflow-hidden">
+                        <div className="flex flex-col gap-1 pb-2">
+                          {m.items!.map((it) => {
+                            const internal = it.href.startsWith("/");
+                            const content = (
+                              <>
+                                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg" style={{ background: "rgba(232,200,106,0.15)" }}>
+                                  <Icon name={it.icon} />
+                                </span>
+                                <span>
+                                  <span className="block text-sm font-semibold" style={{ color: "#30170a" }}>{t(it.label)}</span>
+                                  <span className="block text-xs" style={{ color: "rgba(48,23,10,0.55)" }}>{t(it.desc)}</span>
+                                </span>
+                              </>
+                            );
+                            const cls = "flex items-center gap-3 rounded-xl p-2.5 transition-colors hover:bg-[rgba(224,199,140,0.18)]";
+                            return internal ? (
+                              <Link key={it.href} to={it.href} onClick={() => setMobileOpen(false)} className={cls}>
+                                {content}
+                              </Link>
+                            ) : (
+                              <a key={it.href} href={it.href} target="_blank" rel="noreferrer" onClick={() => setMobileOpen(false)} className={cls}>
+                                {content}
+                              </a>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </nav>
             <div className="mt-4 grid grid-cols-2 gap-3">
               <button
